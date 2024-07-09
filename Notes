@@ -1,0 +1,55 @@
+SIR'S GITHUB
+
+https://github.com/sandipmohapatra/Batch237
+
+
+MINE GITHUB
+
+https://github.com/Hemanth1316/Hemanth-Kumar
+
+
+Opening Git
+
+Repository --> Git bash --> ls -1  --> vi filename.txt
+
+By entering type i
+later type content
+esc : WQ  Enter
+
+
+MASTER
+
+ls -l
+vi filename.txt  ( after edting ESC :wq ENTER )
+cat filename.txt
+git remote add origin " copy paste git link"
+git pull origin main
+
+git add filename.txt
+git status
+git commit -m " any message "
+ls -l
+
+BRANCH 
+
+git branch branchname
+vi filename.txt ( after edting ESC :wq ENTER )
+cat filename.txt
+git add filename.txt
+git status
+git commit -m " any message "
+ls -l
+git checkout branchname
+
+MERGE
+
+git merge branchname
+ls -l
+
+PUSH
+
+ssh-keygen
+cat (copy paste public link)
+copy the key and paste in github ssh newkey
+ssh -T git@github.com
+git push origin branchname
