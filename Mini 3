@@ -1,0 +1,677 @@
+MINI PROJECT-3 
+TITLE : HEALTH LOGGER
+
+index.html
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="mini.css">
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body class="body">
+	<br>
+	<br>
+	<br>
+	<h1>Health Logger</h1>
+	<p color=white>Developed by Raghavendra Reddy M</p>
+	<br>
+	<br>
+	<a href="login.jsp"><button class="button" type="button">Doctor
+			Login</button> </a>
+</body>
+</html>
+
+mini.css
+@charset "UTF-8";
+.button {
+	background-color: #04AA6D;
+	border: none;
+	color: orange;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	font-size: 16px;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+.button2 {
+	background-color: #04AA6D;
+	border: none;
+	color: orange;
+	padding: 15px 32px;
+	text-align: center;
+	text-decoration: none;
+	display: inline-block;
+	margin: 4px 2px;
+	cursor: pointer;
+}
+.body {
+	background-color: #b4b1b1;
+	text-align: center;
+	vertical-align: middle;
+}
+.rcorner {
+	border-radius: 25px;
+	border: 2px solid #73AD21;
+	padding: 5px;
+}
+.rcorner2 {
+	border-radius: 25px;
+	border: 2px solid #73AD21;
+	padding: 20px;
+}
+listvitals.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.util.*"%>
+<%@ page import="java.util.*, project3.Vitals"%>
+<%@ page import="project3.VitalsDAO"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>List Vitals</title>
+<link rel="stylesheet" href="mini.css">
+</head>
+<body class="body">
+	<h1>List of Vitals</h1>
+	<br>
+	<table align="center" border="1">
+		<tr>
+			<th>Patient ID</th>
+			<th>BP High</th>
+			<th>BP Low</th>
+			<th>SP02</th>
+			<th>Date</th>
+			<th>Action</th>
+		</tr>
+		<%
+            int patientId = Integer.parseInt(request.getParameter("id"));
+            List<Vitals> vitalsList = VitalsDAO.getVitalsByPatientId(patientId);
+            for (Vitals vitals : vitalsList) {
+        %>
+		<tr>
+			<td><%= vitals.getPatientId() %></td>
+			<td><%= vitals.getBpHigh() %></td>
+			<td><%= vitals.getBpLow() %></td>
+			<td><%= vitals.getSp02() %></td>
+			<td><%= vitals.getDate() %></td>
+			<td>
+				<button class="button2" type="submit">Delete</button>
+			</td>
+		</tr>
+		<% } %>
+	</table>
+	<br>
+	<br>
+	<a href=adminhome.jsp><button class="button" type="submit">Home
+			Page</button></a>
+	<a href=managepatient.jsp><button class="button" type="submit">View
+			Patients</button></a>
+	<a href=vitalform.jsp><button class="button" type="submit">Record
+			New Vitals</button></a>
+</body>
+</html>
+login.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="mini.css">
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body class="body">
+	<br>
+	<br>
+	<br>
+	<h1>Health Logger</h1>
+	<p color=grey>Doctor Login</p>
+	<br>
+	<br>
+	<form action=admin1>
+		<table align="center">
+			<tr>
+				<td>Enter Email:</td>
+			</tr>
+			<tr>
+				<td><input class="rcorner" type=text name=email size=20></td>
+			</tr>
+			<tr>
+				<td></td>
+			</tr>
+			<tr>
+				<td>Enter Password:</td>
+			</tr>
+			<tr>
+				<td><input class="rcorner" type=text name=password size=20></td>
+			</tr>
+		</table>
+		<br>
+		<button class="button" type="submit">Login</button>
+	</form>
+</body>
+</html>
+adminhome.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="mini.css">
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body class="body">
+	<br>
+	<br>
+	<br>
+	<h1>Health Logger</h1>
+	<p color=white>Developed by Raghavendra Reddy M </p>
+	<br>
+	<br>
+	<a href="patientform.jsp"><button class="button" type="button">Manage
+			Patients</button>
+		<br>
+	<br> <a href="vitalform.jsp"><button class="button"
+				type="button">Manage Vitals</button>
+</body>
+</html>
+managepatient.jsp
+
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<%@ page import="java.util.*"%>
+<%@ page import="project3.Patient"%>
+<%@ page import="project3.PatientDAO"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>List Patients</title>
+<link rel="stylesheet" href="mini.css">
+</head>
+<body class="body">
+	<h1>List of Patients</h1>
+	<br>
+	<form action="managepatient.jsp" align="left" method="post"
+		style="display: inline;">
+		<input class="rcorner" align="left" type="text" name="search"
+			placeholder="Search patient by name"> <input class="button2"
+			type="submit" value="Search">
+	</form>
+	<br>
+	<br>
+	<br>
+	<table align="center" border="2">
+		<tr>
+			<th>Name</th>
+			<th>Phone</th>
+			<th>Age</th>
+			<th>Gender</th>
+			<th>Diagnosis</th>
+			<th>Remarks</th>
+			<th>Actions</th>
+		</tr>
+		<%
+            List<Patient> patients = PatientDAO.getAllPatients();
+            for (Patient patient : patients) {
+        %>
+		<tr>
+			<td><%= patient.getName() %></td>
+			<td><%= patient.getPhone() %></td>
+			<td><%= patient.getAge() %></td>
+			<td><%= patient.getGender() %></td>
+			<td><%= patient.getDiagnosis() %></td>
+			<td><%= patient.getRemarks() %></td>
+			<td><a href=patientform.jsp><button class="button2"
+						type="submit">Update</button></a>
+				<button class="button2"
+					onclick="window.location.href='VitalsServlet?action=list&id=<%= patient.getId() %>'">View
+					Vitals</button>
+				<button class="button2" type="submit">Delete</button></td>
+		</tr>
+		<% } %>
+	</table>
+	<br>
+	<a href=patientform.jsp><button class="button2" type="submit">Add
+			Patients</button></a>
+	<a href=vitalform.jsp><button class="button2" type="submit">Add
+			Vitals</button></a>
+</body>
+</html>
+
+patientform.jsp
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+	pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="mini.css">
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body class="body">
+	<br>
+	<br>
+	<br>
+	<h1>Health Logger</h1>
+	<p color=grey>Add/Update Patient Information</p>
+	<br>
+	<br>
+	<form align="center" action="PatientServlet?action=add" method="post">
+		Name:<br> <input class="rcorner" type="text" name="name" required><br>
+		<br>Phone: <br>
+		<input class="rcorner" type="text" name="phone" required><br>
+		<br>Age: <br>
+		<input class="rcorner" type="number" name="age" required><br>
+		<br>Gender: <br>
+		<input class="rcorner" type="text" name="gender" required><br>
+		<br>Diagnosis: <br>
+		<input class="rcorner2" type="text" name="diagnosis" required><br>
+		<br>Remarks:<br> <input class="rcorner2" type="text"
+			name="remarks"><br> <br> <input type="submit"
+			class="button" value="Add/Update Patient">
+	</form>
+	<a href=managepatient.jsp><button class="button" type="submit">View
+			Patients</button></a>
+</body>
+</html>
+DBUtil.java
+package java237;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+public class DBUtil {
+	private static final String URL = "jdbc:mysql://localhost:3306/miniproject3";
+	private static final String USER = "root";
+	private static final String PASSWORD = "1234";
+	public static Connection getConnection() {
+		Connection conn = null;
+		try {
+			Class.forName("com.mysql.jdbc.Driver");
+			conn = DriverManager.getConnection(URL, USER, PASSWORD);
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		return conn;
+	}
+}
+Patient.java
+package project3;
+public class Patient {
+	private int id;
+	private String name;
+	private String phone;
+	private int age;
+	private String gender;
+	private String diagnosis;
+	private String remarks;
+	public Patient() {}
+	public Patient(String name, String phone, int age, String gender, String diagnosis, String remarks) {
+		this.name = name;
+		this.phone = phone;
+		this.age = age;
+		this.gender = gender;
+		this.diagnosis = diagnosis;
+		this.remarks = remarks;
+	}
+	public Patient(int id, String name, String phone, int age, String gender, String diagnosis, String remarks) {
+		this.id = id;
+		this.name = name;
+		this.phone = phone;
+		this.age = age;
+		this.gender = gender;
+		this.diagnosis = diagnosis;
+		this.remarks = remarks;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getPhone() {
+		return phone;
+	}
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+	public String getDiagnosis() {
+		return diagnosis;
+	}
+	public void setDiagnosis(String diagnosis) {
+		this.diagnosis = diagnosis;
+	}
+	public String getRemarks() {
+		return remarks;
+	}
+	public void setRemarks(String remarks) {
+		this.remarks = remarks;
+	}
+}
+vitalform.jsp
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="mini.css">
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body class="body">
+	<br>
+	<br>
+	<br>
+	<h1>Health Logger</h1>
+	Add Patient's Vital Information
+	<br>
+	<br>
+	<br>
+	<form align="center" action="VitalsServlet?action=add" method="post">
+		Patient ID: <br>
+		<input class="rcorner" type="number" name="patientId" required><br>
+		<br>BP High: <br>
+		<input class="rcorner" type="number" name="bpHigh" required><br>
+		<br>BP Low: <br>
+		<input class="rcorner" type="number" name="bpLow" required><br>
+		<br>SP02: <br>
+		<input class="rcorner" type="number" name="sp02" required><br>
+		<br>
+		<input class="button" type="submit" value="Add Vitals">
+	</form>
+</body>
+</html>
+PatientDAO.java
+package java237;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+public class PatientDAO {
+	public static void addPatient(Patient patient) {
+		try (Connection conn = DBUtil.getConnection()) {
+			String query = "INSERT INTO patients (name, phone, age, gender, diagnosis, remarks) VALUES (?, ?, ?, ?, ?, ?)";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, patient.getName());
+			ps.setString(2, patient.getPhone());
+			ps.setInt(3, patient.getAge());
+			ps.setString(4, patient.getGender());
+			ps.setString(5, patient.getDiagnosis());
+			ps.setString(6, patient.getRemarks());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static List<Patient> getAllPatients() {
+		List<Patient> patients = new ArrayList<>();
+		try (Connection conn = DBUtil.getConnection()) {
+			String query = "SELECT * FROM patients";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {
+				Patient patient = new Patient(
+						rs.getInt("id"),
+						rs.getString("name"),
+						rs.getString("phone"),
+						rs.getInt("age"),
+						rs.getString("gender"),
+						rs.getString("diagnosis"),
+						rs.getString("remarks")
+						);
+				patients.add(patient);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return patients;
+	}
+	public static void updatePatient(Patient patient) {
+		try (Connection conn = DBUtil.getConnection()) {
+			String query = "UPDATE patients SET name=?, phone=?, age=?, gender=?, diagnosis=?, remarks=? WHERE id=?";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setString(1, patient.getName());
+			ps.setString(2, patient.getPhone());
+			ps.setInt(3, patient.getAge());
+			ps.setString(4, patient.getGender());
+			ps.setString(5, patient.getDiagnosis());
+			ps.setString(6, patient.getRemarks());
+			ps.setInt(7, patient.getId());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+}
+Vitals.java
+public class Vitals {
+	private int id;
+	private int patientId;
+	private int bpHigh;
+	private int bpLow;
+	private int sp02;
+	private String date;
+	public Vitals() {}
+	public Vitals(int patientId, int bpHigh, int bpLow, int sp02) {
+		this.patientId = patientId;
+		this.bpHigh = bpHigh;
+		this.bpLow = bpLow;
+		this.sp02 = sp02;
+	}
+	public Vitals(int id, int patientId, int bpHigh, int bpLow, int sp02, String date) {
+		this.id = id;
+		this.patientId = patientId;
+		this.bpHigh = bpHigh;
+		this.bpLow = bpLow;
+		this.sp02 = sp02;
+		this.date = date;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public int getPatientId() {
+		return patientId;
+	}
+	public void setPatientId(int patientId) {
+		this.patientId = patientId;
+	}
+	public int getBpHigh() {
+		return bpHigh;
+	}
+	public void setBpHigh(int bpHigh) {
+		this.bpHigh = bpHigh;
+	}
+	public int getBpLow() {
+		return bpLow;
+	}
+	public void setBpLow(int bpLow) {
+		this.bpLow = bpLow;
+	}
+	public int getSp02() {
+		return sp02;
+	}
+	public void setSp02(int sp02) {
+		this.sp02 = sp02;
+	}
+	public String getDate() {
+		return date;
+	}
+	public void setDate(String date) {
+		this.date = date;
+	}
+}
+VitalsDAO.java
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+public class VitalsDAO {
+	public static void addVitals(Vitals vitals) {
+		try (Connection conn = DBUtil.getConnection()) {
+			String query = "INSERT INTO vitals (patient_id, bp_high, bp_low, sp02) VALUES (?, ?, ?, ?)";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, vitals.getPatientId());
+			ps.setInt(2, vitals.getBpHigh());
+			ps.setInt(3, vitals.getBpLow());
+			ps.setInt(4, vitals.getSp02());
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	public static List<Vitals> getVitalsByPatientId(int patientId) {
+		List<Vitals> vitalsList = new ArrayList<>();
+		try (Connection conn = DBUtil.getConnection()) {
+			String query = "SELECT * FROM vitals WHERE patient_id=?";
+			PreparedStatement ps = conn.prepareStatement(query);
+			ps.setInt(1, patientId);
+			ResultSet rs = ps.executeQuery();
+			while (rs.next()) {	
+				Vitals vitals = new Vitals(
+						rs.getInt("id"),
+						rs.getInt("patient_id"),
+						rs.getInt("bp_high"),
+						rs.getInt("bp_low"),
+						rs.getInt("sp02"),
+						rs.getString("date")
+						);
+				vitalsList.add(vitals);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return vitalsList;
+	}
+}
+Admin1.java
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+public class admin1 extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	public admin1() {
+		super();
+	}
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String email=request.getParameter("email");
+		String password=request.getParameter("password");
+		System.out.println(email);
+		System.out.println(password);
+		if(email.equals("admin") && password.equals("admin")){
+			System.out.println("success");
+			response.sendRedirect("adminhome.jsp");
+		}
+		else {
+			System.out.println("unsuccess");
+			response.sendRedirect("login.jsp");
+		}
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	}
+}
+PatientServlet.java
+import java.io.IOException;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/PatientServlet")
+public class PatientServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+    public PatientServlet() {
+        super();
+    }
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		if (true) {
+            response.sendRedirect("managepatient.jsp");
+        }
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		 String action = request.getParameter("action");
+	        if ("add".equals(action)) {
+	        	System.out.println("add");
+	            String name = request.getParameter("name");
+	            String phone = request.getParameter("phone");
+	            int age = Integer.parseInt(request.getParameter("age"));
+	            String gender = request.getParameter("gender");
+	            String diagnosis = request.getParameter("diagnosis");
+	            String remarks = request.getParameter("remarks");
+	            Patient patient = new Patient(name, phone, age, gender, diagnosis, remarks);
+	            PatientDAO.addPatient(patient);
+	            response.sendRedirect("managepatient.jsp");
+	        }    
+	}
+}
+VitalsServlet.java
+import java.io.IOException;
+import java.util.List;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+@WebServlet("/VitalsServlet")
+public class VitalsServlet extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+	public VitalsServlet() {
+		super();
+	}
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+		if ("list".equals(action)) {
+			int patientId = Integer.parseInt(request.getParameter("id"));
+			List<Vitals> vitalsList = VitalsDAO.getVitalsByPatientId(patientId);
+			request.setAttribute("vitalsList", vitalsList);
+			request.getRequestDispatcher("listvitals.jsp").forward(request, response);
+		}
+	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String action = request.getParameter("action");
+		if ("add".equals(action)) {
+			int patientId = Integer.parseInt(request.getParameter("patientId"));
+			int bpHigh = Integer.parseInt(request.getParameter("bpHigh"));
+			int bpLow = Integer.parseInt(request.getParameter("bpLow"));
+			int sp02 = Integer.parseInt(request.getParameter("sp02"));
+			Vitals vitals = new Vitals(patientId, bpHigh, bpLow, sp02);
+			VitalsDAO.addVitals(vitals);
+			response.sendRedirect("listvitals.jsp?id=" + patientId);
+		}
+	}
+}
+                                                 
+                                                                                
+
