@@ -182,7 +182,7 @@ System.out.println(disc);
 } 
  
 
--------------------------------------------
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 PS 2
 
@@ -330,7 +330,7 @@ System.out.println(disc);
 } 
  
 
--------------------------------------------
+------------------------------------------------------------------------------------------------------------------------------------------------------
 
 PS 3
 
@@ -526,7 +526,7 @@ System.out.println("Second cart: " + cart2);
 } 
  
  
--------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------
 
 PS 4
 
@@ -760,6 +760,1182 @@ System.out.println("Second cart: " + cart2);
  
 }
 } 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+PS 5
+
+
+Properties Files
+Pom.xml
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+ <modelVersion>4.0.0</modelVersion> 
+ <groupId>com.springframework</groupId> 
+ <artifactId>Spring_ShoppingCart_PracticeExercise</artifactId> 
+ <version>0.0.1-SNAPSHOT</version> 
+ <name>Spring_ShoppingCart_PracticeExercise</name> 
+  
+ <properties>
+<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<maven.compiler.source>1.11</maven.compiler.source>
+<maven.compiler.target>1.11</maven.compiler.target>
+<spring.version>5.1.0.RELEASE</spring.version>
+<log4j.version>2.11.1</log4j.version>
+<junit.version>5.3.1</junit.version> 
+ </properties> 
+  
+ <dependencies>
+<dependency>
+<groupId>org.springframework</groupId>
+<artifactId>spring-core</artifactId>
+<version>${spring.version}</version>
+</dependency>
  
+<dependency>
+<groupId>org.springframework</groupId>
+<artifactId>spring-context</artifactId>
+<version>${spring.version}</version>
+</dependency> 
+ 
+ </dependencies> 
+ 
+</project>
+ 
+ 
+
+
+
+Product.java
+package com.di.constructorMethod;
+ 
+public class Product {
+ 
+private int productId;
+private String productName;
+private double productPrice;
+private double productDiscount;
+ 
+public Product(int productId, String productName, double productPrice) {
+super();
+this.productId = productId;
+this.productName = productName;
+this.productPrice = productPrice;
+}
+ 
+public double getProductDiscount() {
+return productDiscount;
+}
+ 
+public void setProductDiscount(double productDiscount) {
+this.productDiscount = productDiscount;
+}
+ 
+@Override
+public String toString() {
+return "Product [productId=" + productId + ", productName=" + productName + ", productPrice=" + productPrice
++ ", productDiscount=" + productDiscount + "]";
+}
+ 
+}
+ 
+Battery.java
+package com.di.constructorMethod;
+ 
+public class Battery extends Product {
+ 
+private boolean rechargeable;
+private double productDiscount;
+ 
+public Battery(int productId, String productName, double productPrice, boolean rechargeable) {
+super(productId, productName, productPrice);
+this.rechargeable = rechargeable;
+}
+ 
+public double getProductDiscount() {
+return productDiscount;
+}
+ 
+public void setProductDiscount(double productDiscount) {
+this.productDiscount = productDiscount;
+}
+ 
+@Override
+public String toString() {
+return "Battery ["+ super.toString() + "productDiscount=" + productDiscount + " rechargeable=" + rechargeable + "]";
+}
+ 
+}
+ 
+Disc.java
+package com.di.constructorMethod;
+ 
+public class Disc extends Product {
+ 
+private int capacity;
+private double productDiscount;
+ 
+public Disc(int productId, String productName, double productPrice, int capacity) {
+super(productId, productName, productPrice);
+this.capacity = capacity;
+}
+ 
+public double getProductDiscount() {
+return productDiscount;
+}
+ 
+public void setProductDiscount(double productDiscount) {
+this.productDiscount = productDiscount;
+}
+ 
+@Override
+public String toString() {
+return "Disc [" + super.toString() + "productDiscount=" + productDiscount + " capacity=" + capacity + "MB" + "]";
+}
+ 
+ 
+ 
+} 
+ 
+
+
+
+ShoppingCart.java
+package com.scopes.iocContainer;
+ 
+import java.util.ArrayList;
+import java.util.List;
+ 
+import com.di.constructorMethod.Product;
+ 
+public class ShoppingCart {
+ 
+private List<Product> items = new ArrayList<>();
+ 
+public void addItem(Product item) {
+items.add(item);
+}
+ 
+public List<Product> getItems(){
+return items;
+} 
+@Override
+public String toString() {
+return "ShoppingCart [items=" + items + "]";
+}
+}
+ 
+discounts.properties
+
+specialcustomer.discount=0.1
+summer.discount=0.15
+endofyear.discount=0.2
+ 
+applicationContext.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+      xmlns:util="http://www.springframework.org/schema/util" 
+      xmlns:p="http://www.springframework.org/schema/p" 
+      xsi:schemaLocation="http://www.springframework.org/schema/beans 
+          http://www.springframework.org/schema/beans/spring-beans.xsd 
+          http://www.springframework.org/schema/util 
+          http://www.springframework.org/schema/util/spring-util.xsd"> 
+       
+      <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer"> 
+                               <property name="location" value="discounts.properties" />
+</bean> 
+       
+      <bean id="battery" class="com.di.constructorMethod.Battery"> 
+                              <constructor-arg name="productId" value="101"></constructor-arg> 
+                              <constructor-arg name="productName" value="Nippo Battery"></constructor-arg> 
+                              <constructor-arg name="productPrice" value="15.50"></constructor-arg> 
+                              <constructor-arg name="rechargeable" value="true"></constructor-arg> 
+                              <property name="productDiscount" value="${specialcustomer.discount}"></property> 
+      </bean> 
+       
+      <bean id="disc" class="com.di.constructorMethod.Disc"> 
+                              <constructor-arg name="productId" value="201"></constructor-arg> 
+                              <constructor-arg name="productName" value="Hard Disk"></constructor-arg> 
+                              <constructor-arg name="productPrice" value="30"></constructor-arg> 
+                              <constructor-arg name="capacity" value="512"></constructor-arg> 
+                              <property name="productDiscount" value="${summer.discount}"></property> 
+      </bean>
+      <bean id="shoppingCart" class="com.scopes.iocContainer.ShoppingCart" scope="prototype"> 
+      </bean> 
+       </beans>
+App.java
+package com.scopes.iocContainer;
+ 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+ 
+import com.di.constructorMethod.Product;
+ 
+public class App {
+ 
+public static void main(String[] args) {
+// TODO Auto-generated method stub
+ 
+ApplicationContext ac = new ClassPathXmlApplicationContext("applicationContext.xml");
+Product battery = (Product) ac.getBean("battery");
+Product disc = (Product) ac.getBean("disc");
+ 
+ShoppingCart cart1 = (ShoppingCart) ac.getBean("shoppingCart");
+cart1.addItem(battery);
+cart1.addItem(disc);
+ 
+ShoppingCart cart2 = (ShoppingCart) ac.getBean("shoppingCart");
+cart2.addItem(disc);
+ 
+System.out.println("First cart: " + cart1)
+System.out.println("Second cart: " + cart2);
+ 
+((AbstractApplicationContext) ac).close();
+ 
+}
+} 
+ 
+-----------------------------------------------------------------------------------------------------------------------------------------------------
+
+PS 6
+
+
+Implementing AOP
+
+Pom.xml  
+<properties>  
+<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
+<maven.compiler.source>1.11</maven.compiler.source>  
+<maven.compiler.target>1.11</maven.compiler.target>  
+<spring.version>5.1.0.RELEASE</spring.version>  
+<log4j.version>2.11.1</log4j.version>  
+<junit.version>5.3.1</junit.version>  
+</properties>  
+<dependencies>  
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-core -->  
+<dependency>  
+<groupId>org.springframework</groupId>  
+<artifactId>spring-core</artifactId>  
+<version>${spring.version}</version>  
+</dependency>  
+<!-- https://mvnrepository.com/artifact/org.springframework/spring-context -->  
+<dependency>  
+<groupId>org.springframework</groupId>  
+<artifactId>spring-context</artifactId>  
+<version>${spring.version}</version>  
+</dependency>  
+  
+<dependency>  
+<groupId>org.springframework</groupId>  
+<artifactId>spring-aop</artifactId>  
+<version>${spring.version}</version>  
+</dependency>  
+  
+<dependency>  
+<groupId>org.springframework</groupId>  
+<artifactId>spring-aspects</artifactId>  
+<version>${spring.version}</version>  
+</dependency>  
+</dependencies>  
+
+
+AppConfig.java  
+package com.mphasis;  
+   
+import org.springframework.context.annotation.ComponentScan;  
+import org.springframework.context.annotation.Configuration;  
+import org.springframework.context.annotation.EnableAspectJAutoProxy;  
+   
+@Configuration  
+@EnableAspectJAutoProxy  
+@ComponentScan("com.mphasis")  
+public class AppConfig {  
+   
+}  
+  
+Product.java  
+package com.mphasis;  
+  
+public abstract class Product {  
+int product_id;  
+String product_name;  
+int product_price;  
+public Product(int product_id, String product_name, int product_price) {  
+  
+this.product_id = product_id;  
+this.product_name = product_name;  
+this.product_price = product_price;  
+}  
+  
+}  
+
+
+Battery.java  
+package com.mphasis;  
+   
+import org.springframework.beans.factory.annotation.Value;  
+import org.springframework.stereotype.Component;  
+   
+@Component("battery")  
+public class Battery extends Product{  
+  
+@Override  
+public String toString() {  
+return "Battery [rechargable=" + rechargable + ", product_id=" + product_id + ", product_name=" + product_name  
++ ", product_price=" + product_price + "]";  
+}  
+   
+public boolean rechargable;  
+   
+public Battery(@Value("1")int product_id, @Value("battery")String product_name, @Value("100")int product_price,@Value("true") boolean rechargable) {  
+super(product_id, product_name, product_price);  
+this.rechargable = rechargable;  
+}  
+   
+   
+}  
+Disc.java  
+package com.mphasis;  
+   
+import org.springframework.beans.factory.annotation.Value;  
+import org.springframework.stereotype.Component;  
+   
+@Component("disc")  
+public class Disc extends Product {  
+  
+@Override  
+public String toString() {  
+return "Disc [capacity=" + capacity + ", product_id=" + product_id + ", product_name=" + product_name  
++ ", product_price=" + product_price + "]";  
+}  
+   
+private int capacity;  
+   
+public Disc(@Value("2")int product_id, @Value("disc")String product_name,@Value("1500") int product_price, @Value("12")int capacity) {  
+super(product_id, product_name, product_price);  
+this.capacity = capacity;  
+}  
+}  
+
+
+ShoppingCart.java  
+package com.mphasis;  
+   
+import java.util.ArrayList;  
+import java.util.List;  
+   
+import org.springframework.stereotype.Component;  
+   
+@Component("shoppingcart")  
+   
+public class ShoppingCart {  
+private List<Product> items=new ArrayList<Product>();  
+public void addItem(Product item)  
+{  
+items.add(item);  
+}  
+public List<Product> getItems()  
+{  
+return items;  
+}  
+public void removeItem(Product item)  
+{  
+items.remove(item);  
+}  
+public void UpdateItem(Product item,int i) throws Exception  
+{  
+items.set(i, item);  
+}  
+@Override  
+public String toString() {  
+return "ShoppingCart [items=" + items + "]";  
+}  
+  
+}  
+Logging.java  
+package com.mphasis;  
+   
+import org.aspectj.lang.annotation.After;  
+import org.aspectj.lang.annotation.AfterReturning;  
+import org.aspectj.lang.annotation.AfterThrowing;  
+import org.aspectj.lang.annotation.Around;  
+import org.aspectj.lang.annotation.Aspect;  
+import org.aspectj.lang.annotation.Before;  
+import org.springframework.stereotype.Component;  
+   
+@Aspect  
+@Component  
+public class Logging {  
+   
+@Before("execution(* com.mphasis.ShoppingCart.getItems())")  
+public void BeforeGetItem() {  
+System.out.println("Getting the item");  
+}  
+@After("execution(* com.mphasis.ShoppingCart.getItems())")  
+public void AfterGetItem() {  
+System.out.println("Got the Item");  
+}  
+@AfterReturning("execution(* com.mphasis.ShoppingCart.getItems())")  
+public void AfterReturnItem() {  
+System.out.println("Item is returning");  
+}  
+@Around("execution(* com.mphasis.ShoppingCart.getItems())")  
+public void AroundItem() {  
+System.out.println("Around executed in GetItem");  
+}  
+  
+@Before("execution(* com.mphasis.ShoppingCart.addItem(Product))")  
+public void BeforeAddItem() {  
+System.out.println("Item is going to add");  
+}  
+@After("execution(* com.mphasis.ShoppingCart.addItem(Product))")  
+public void AfterAddItem() {  
+System.out.println("Item is added");  
+}  
+  
+@Before("execution(* com.mphasis.ShoppingCart.removeItem(Product))")  
+public void BeforeremoveItem() {  
+System.out.println("Item is going to remove");  
+}  
+@After("execution(* com.mphasis.ShoppingCart.removeItem(Product))")  
+public void AfterremoveItem() {  
+System.out.println("Item is removed");  
+}  
+  
+@Before("execution(* com.mphasis.ShoppingCart.UpdateItem(Product,int))")  
+public void BeforeUpdateItem() {  
+System.out.println("Item is going to update");  
+}  
+@After("execution(* com.mphasis.ShoppingCart.UpdateItem(Product,int))")  
+public void AfterUpdateItem() {  
+System.out.println("Item is updated");  
+}  
+@AfterThrowing("execution(* com.mphasis.ShoppingCart.UpdateItem(Product,int))")  
+public void AfterExceptionThrown() {  
+System.out.println("Exception Thrown");  
+}  
+  
+}  
+
+
+
+
+
+App.java  
+package com.mphasis;  
+  
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;  
+  
+public class App {  
+  
+public static void main(String[] args) {  
+// TODO Auto-generated method stub  
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class);  
+Product p1=(Battery) ctx.getBean("battery");  
+Product p2=(Disc)ctx.getBean("disc");  
+Product p3=(Battery)ctx.getBean("battery");  
+ShoppingCart s=(ShoppingCart) ctx.getBean("shoppingcart");  
+s.addItem(p1);  
+s.addItem(p2);  
+s.addItem(p3);  
+  
+try {  
+s.UpdateItem(p2, 2);  
+} catch (Exception e) {  
+// TODO Auto-generated catch block  
+e.printStackTrace();  
+}  
+s.getItems();  
+System.out.println(s);  
+s.removeItem(p3);  
+//s.getItems();  
+System.out.println(s);  
+ctx.close();  
+}  
+  
+}  
+
+-----------------------------------------------------------------------------------------------------------------------------------------
+
+ PS 7
+
+ create database Bus;  
+  use Bus; 
+  create table Passenger_Details(  
+  passenger_id int primary key not null,  
+  passenger_name varchar (50),  
+  passenger_dob varchar (20),  
+  passenger_phone varchar (10),  
+  passenger_email varchar (20)  
+  );  
+  insert into Passenger_Details Values(1234,"Anu","2000-12-05","9876543266","anu@gmail.com"),  
+  (1235,"Vikas","2001-01-05","8876543266","vikas@gmail.com"),  
+  (1236,"Sharmi","2011-02-15","9666543266","Sharmi@gmail.com"),  
+  (1237,"nikitha","1990-12-05","9076543266","nikitha@gmail.com"),  
+  (1238,"Vinu","1999-06-05","9855432066","Vinu@gmail.com");  
+  select * from Passenger_Details; 
+
+--------------------------------------------------------------------------------------------------------------------------------------------------
+
+PS 8
+
+db.properties 
+db.driver=com.mysql.cj.jdbc.Driver 
+db.url=jdbc:mysql://localhost:3306/Bus
+db.user=root 
+db.pwd=Password@12 
+ 
+AppConfig.java 
+package springDemo; 
+import javax.sql.DataSource; 
+import org.apache.commons.dbcp2.BasicDataSource; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.context.annotation.Bean; 
+import org.springframework.context.annotation.ComponentScan; 
+import org.springframework.context.annotation.Configuration; 
+import org.springframework.context.annotation.PropertySource; 
+import org.springframework.jdbc.core.JdbcTemplate; 
+  @Configuration 
+  @ComponentScan("springDemo") 
+  @PropertySource("classpath:db.properties") 
+  public class AppConfig { 
+    @Value("${db.driver}") 
+  private String driverClassName; 
+    @Value("${db.url}") 
+  private String url; 
+    @Value("${db.user}") 
+  private String user; 
+    @Value("${db.pwd}") 
+  private String password; 
+    @Bean 
+    public DataSource dataSource() { 
+      BasicDataSource bds=new BasicDataSource(); 
+      bds.setDriverClassName(driverClassName); 
+      bds.setUrl(url); 
+      bds.setUsername(user); 
+      bds.setPassword(password); 
+      bds.setInitialSize(10); 
+      bds.setMaxIdle(50); 
+      bds.setMinIdle(2); 
+      return bds; 
+    } 
+    @Bean() 
+    public JdbcTemplate jdbcTemplate(DataSource datasource) { 
+      JdbcTemplate jt=new JdbcTemplate(datasource); 
+      return jt; 
+    }       
+} 
+
+Passenger_Details.java 
+package springDemo; 
+public class Passenger_Details { 
+  int passenger_id; 
+  String passenger_name; 
+  String passenger_dob; 
+  String passenger_phone; 
+  String passenger_email; 
+   
+ 
+  public int getPassenger_id() { 
+    return passenger_id; 
+  } 
+  public String getPassenger_name() { 
+    return passenger_name; 
+  } 
+  public String getPassenger_dob() { 
+    return passenger_dob; 
+  } 
+  public String getPassenger_phone() { 
+    return passenger_phone; 
+  } 
+  public String getPassenger_email() { 
+    return passenger_email; 
+  } 
+  public void setPassenger_id(int passenger_id) { 
+    this.passenger_id = passenger_id; 
+  } 
+  public void setPassenger_name(String passenger_name) { 
+    this.passenger_name = passenger_name; 
+  } 
+  public void setPassenger_dob(String passenger_dob) { 
+    this.passenger_dob = passenger_dob; 
+  } 
+  public void setPassenger_phone(String passenger_phone) { 
+    this.passenger_phone = passenger_phone; 
+  } 
+  public void setPassenger_email(String passenger_email) { 
+    this.passenger_email = passenger_email; 
+  } 
+  @Override 
+  public String toString() { 
+    return "Passenger_Details [passenger_id=" + passenger_id + ", passenger_name=" + passenger_name 
+        + ", passenger_dob=" + passenger_dob + ", passenger_phone=" + passenger_phone + ", passenger_email=" 
+        + passenger_email + "]"; 
+  } 
+   
+} 
+
+
+
+ 
+PassengerRowMapper.java 
+package springDemo; 
+import java.sql.ResultSet; 
+import java.sql.SQLException; 
+import org.springframework.jdbc.core.RowMapper; 
+public class PassengerRowMapper implements RowMapper<Passenger_Details> { 
+  @Override 
+  public Passenger_Details mapRow(ResultSet rs, int rowNum) throws SQLException { 
+    // TODO Auto-generated method stub 
+    Passenger_Details p=new Passenger_Details(); 
+    p.setPassenger_id(rs.getInt(1)); 
+    p.setPassenger_name(rs.getString(2)); 
+    p.setPassenger_dob(rs.getString(3)); 
+    p.setPassenger_phone(rs.getString(4)); 
+    p.setPassenger_email(rs.getString(5)); 
+    return p; 
+  } 
+} 
+ServiceLayer.java 
+package springDemo; 
+import java.sql.SQLException; 
+import java.util.List; 
+public interface ServiceLayer { 
+public void InsertPassenger(); 
+public List<Passenger_Details> Retrievepassenger(); 
+public void UpdatepassengerEmail(); 
+public void DeleteById(); 
+public Passenger_Details RetrievepassengerById(int id) throws SQLException; 
+} 
+ 
+ 
+DAOLayer.java 
+package springDemo; 
+import java.sql.SQLException; 
+import java.util.List; 
+import java.util.Scanner; 
+import org.springframework.jdbc.core.JdbcTemplate; 
+ 
+public class DAOLayer implements ServiceLayer{ 
+  private JdbcTemplate template; 
+   
+  public DAOLayer(JdbcTemplate template) { 
+    super(); 
+    this.template = template; 
+  } 
+ 
+  @Override 
+  public void InsertPassenger() { 
+    Scanner sc=new Scanner(System.in); 
+    System.out.println("Enter the Id to insert"); 
+    int id=sc.nextInt(); 
+    System.out.println("Enter the name to insert"); 
+    String name=sc.next(); 
+    System.out.println("Enter the dob to insert"); 
+    String dob=sc.next(); 
+    System.out.println("Enter the phone to insert"); 
+    String phone=sc.next(); 
+    System.out.println("Enter the email"); 
+    String email=sc.next(); 
+  template.update("insert into Passenger_Details values(?,?,?,?,?)",id,name,dob,phone,email); 
+  System.out.println("passenger inserted successfully");   
+  } 
+ 
+ 
+ 
+  @Override 
+  public List<Passenger_Details> Retrievepassenger() { 
+    String sql="select * from passenger_Details"; 
+    PassengerRowMapper rowmapper=new PassengerRowMapper(); 
+    List<Passenger_Details> res=template.query(sql, rowmapper); 
+    for(Passenger_Details s:res) 
+    { 
+      System.out.println(s); 
+    } 
+    return res; 
+  } 
+  @SuppressWarnings("finally") 
+  @Override 
+  public Passenger_Details RetrievepassengerById(int id) throws SQLException{ 
+    try { 
+  String sql = "SELECT * FROM passenger_Details WHERE passenger_id = ?"; 
+  return template.queryForObject(sql, new PassengerRowMapper(), id); 
+    } 
+    finally { 
+      return null; 
+    }   
+  } 
+  @Override 
+  public void UpdatepassengerEmail() { 
+    Scanner sc=new Scanner(System.in); 
+    System.out.println("Enter the id u want to change"); 
+    int id=sc.nextInt(); 
+    System.out.println("Enter the new email"); 
+    String email=sc.next(); 
+    String sql="update passenger_Details set passenger_email=? where passenger_id=?"; 
+    template.update(sql,email,id); 
+    System.out.println("passenger Details updated Successfully"); 
+     
+      } 
+ 
+  @Override 
+  public void DeleteById() { 
+    Scanner sc=new Scanner(System.in); 
+    System.out.println("Enter the id u want to delete"); 
+    int id=sc.nextInt(); 
+  template.update("delete from passenger_Details where passenger_id=?",id); 
+  System.out.println("Record deleted........."); 
+    //sc.close(); 
+  } 
+ 
+} 
+App.java 
+package springDemo; 
+import java.util.Scanner; 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext; 
+import org.springframework.jdbc.core.JdbcTemplate; 
+public class App { 
+  public static void main(String[] args) { 
+    // TODO Auto-generated method stub 
+    AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class); 
+    JdbcTemplate template=ctx.getBean(JdbcTemplate.class); 
+    DAOLayer d=new DAOLayer(template); 
+    ServiceLayer s=d; 
+    while(true) 
+    { 
+    System.out.println("-----------------Bus Booking System------------"); 
+    System.out.println("1)Press 1 for insert\n2)Press 2 for update\n3)Press 3 for retrieve\n4)Press 4 for delete\n5)Press 5 for Quit"); 
+    System.out.println("make your choice"); 
+    Scanner sc=new Scanner(System.in); 
+    int option=sc.nextInt(); 
+    char ch; 
+    switch(option) 
+    { 
+    case 1:s.InsertPassenger(); 
+    System.out.println("Do u want to continue ? press y or n"); 
+          ch=sc.next().charAt(0); 
+          if(ch=='y') 
+        break; 
+          else 
+        System.exit(0);  
+    case 2:s.UpdatepassengerEmail(); 
+    System.out.println("Do u want to continue ? press y or n"); 
+    ch=sc.next().charAt(0); 
+        if(ch=='y') 
+      break; 
+        else 
+      System.exit(0);      
+    case 3:s.Retrievepassenger(); 
+    System.out.println("Do u want to continue ? press y or n"); 
+    ch=sc.next().charAt(0); 
+        if(ch=='y') 
+      break; 
+        else 
+      System.exit(0);         
+    case 4:s.DeleteById(); 
+    System.out.println("Do u want to continue ? press y or n"); 
+    ch=sc.next().charAt(0); 
+        if(ch=='y') 
+      break; 
+        else 
+      System.exit(0);   
+             
+    case 5:System.exit(0);break; 
+    default:System.out.println("Enter the correct option"); 
+    } 
+    }   
+  } 
+} 
+
+PassengerTest.java 
+
+package springDemo; 
+import static org.junit.Assert.*; 
+import java.sql.SQLException; 
+import java.util.List; 
+import org.junit.Test; 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext; 
+import org.springframework.jdbc.core.JdbcTemplate; 
+ 
+public class PassengerTest { 
+  static AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(AppConfig.class); 
+  static JdbcTemplate template = ctx.getBean(JdbcTemplate.class); 
+  static DAOLayer s = new DAOLayer(template); 
+  @Test 
+  public void addProductTest() throws SQLException { 
+    s.InsertPassenger(); 
+    Passenger_Details p1 = s.RetrievepassengerById(1239); 
+     
+    assertEquals("product name should be match", 1239, p1.getPassenger_id()); 
+  } 
+  @Test 
+public void testGetAllPassengers() { 
+List<Passenger_Details> passengers = s.Retrievepassenger(); 
+assertFalse(passengers.isEmpty()); 
+} 
+ 
+@Test 
+public void testUpdatePassenger() throws SQLException { 
+s.UpdatepassengerEmail(); 
+Passenger_Details updatedPassenger = s.RetrievepassengerById(1235); 
+assertEquals("Vikas12@gmail.com", updatedPassenger.getPassenger_email()); 
+} 
+ 
+@Test 
+public void testDeletePassenger() throws SQLException { 
+s.DeleteById(); 
+      assertNull(s.RetrievepassengerById(1235));     
+         
+} 
+ 
+} 
+
+
+---------------------------------------------------------------------------------------------------------------------------------------------------
+
+PS 9
+
+db.properties 
+db.driver=com.mysql.cj.jdbc.Driver 
+db.url=jdbc:mysql://localhost:3306/Bus 
+db.user=root 
+db.pwd=Password@12 
+
+AppConfig.java 
+package springDemo; 
+import java.io.IOException; 
+import java.util.Properties; 
+import javax.sql.DataSource; 
+  
+import org.apache.commons.dbcp2.BasicDataSource; 
+import org.hibernate.SessionFactory; 
+import org.springframework.beans.factory.annotation.Value; 
+import org.springframework.context.annotation.Bean; 
+import org.springframework.context.annotation.ComponentScan; 
+import org.springframework.context.annotation.Configuration; 
+import org.springframework.context.annotation.PropertySource; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+import org.springframework.orm.hibernate5.HibernateTransactionManager; 
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean; 
+import org.springframework.transaction.PlatformTransactionManager; 
+import org.springframework.transaction.annotation.EnableTransactionManagement; 
+  
+@Configuration 
+@ComponentScan("springDemo") 
+@PropertySource("classpath:db.properties") 
+@EnableTransactionManagement(proxyTargetClass=true) 
+public class AppConfig { 
+@Value("${db.driver}") 
+private String driverClassName; 
+@Value("${db.url}") 
+private String url; 
+@Value("${db.user}") 
+private String user; 
+@Value("${db.pwd}") 
+private String password; 
+ 
+@Bean 
+public DataSource dataSource() { 
+BasicDataSource bds=new BasicDataSource(); 
+bds.setDriverClassName(driverClassName); 
+bds.setUrl(url); 
+bds.setUsername(user); 
+bds.setPassword(password); 
+bds.setInitialSize(10); 
+bds.setMaxIdle(50); 
+bds.setMinIdle(2); 
+return bds; 
+} 
+private Properties hibernateProperties() { 
+Properties hibernateProp=new Properties(); 
+hibernateProp.put("hibernate.dialect","org.hibernate.dialect.MySQL8Dialect"); 
+hibernateProp.put("hibernate.format_sql", true); 
+hibernateProp.put("hibernate.use_sql_comments", true); 
+hibernateProp.put("hibernate.show_sql",true); 
+hibernateProp.put("hibernate.max_fetch_depth", 3); 
+hibernateProp.put("hibernate.jdbc.batch_size", 10); 
+hibernateProp.put("hibernate.jdbc.fetch_size", 50); 
+hibernateProp.put("hibernate.connection.autocommit", true); 
+hibernateProp.setProperty("org.hibernate.flushMode", "AUTO"); 
+return hibernateProp; 
+} 
+@Bean 
+public SessionFactory sessionFactory() throws IOException{ 
+LocalSessionFactoryBean sessionFactoryBean=new LocalSessionFactoryBean(); 
+sessionFactoryBean.setDataSource(dataSource()); 
+sessionFactoryBean.setPackagesToScan("springDemo"); 
+sessionFactoryBean.setHibernateProperties(hibernateProperties()); 
+sessionFactoryBean.afterPropertiesSet(); 
+ 
+return sessionFactoryBean.getObject(); 
+} 
+@Bean 
+public HibernateTemplate hibernateTemplate(SessionFactory sessionfactory) { 
+HibernateTemplate hbt=new HibernateTemplate(sessionfactory); 
+return hbt; 
+ 
+} 
+@Bean public PlatformTransactionManager transactionManager() throws IOException 
+{ 
+return new HibernateTransactionManager(sessionFactory()); 
+}   
+} 
+ServiceLayer.java 
+package springDemo; 
+ 
+import java.util.List; 
+ 
+public interface ServiceLayer { 
+public void InsertPassenger(); 
+public Passenger_Details GetPassengerById(int id); 
+public List<Passenger_Details> RetrievePassenger(); 
+public void UpdatePassengerEmail(); 
+public void DeletePassengerById(); 
+ 
+} 
+DAOLayer.java 
+package springDemo; 
+  
+import java.util.List; 
+import java.util.Scanner; 
+  
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+import org.springframework.stereotype.Repository; 
+import org.springframework.transaction.annotation.Transactional; 
+  
+@Repository("htDao") 
+@Transactional 
+public class DAOLayer implements ServiceLayer{ 
+@Autowired 
+private HibernateTemplate ht; 
+@Override 
+@Transactional(readOnly=false) 
+public void InsertPassenger() { 
+// TODO Auto-generated method stub 
+Passenger_Details p=new Passenger_Details(); 
+Scanner sc=new Scanner(System.in); 
+System.out.println("Enter the id to insert"); 
+int id=sc.nextInt(); 
+p.setPassenger_id(id); 
+System.out.println("Enter the name to insert"); 
+String name=sc.next(); 
+p.setPassenger_name(name); 
+System.out.println("Enter the dob to insert"); 
+String dob=sc.next(); 
+p.setPassenger_dob(dob); 
+System.out.println("Enter the phone to insert"); 
+String phone=sc.next(); 
+p.setPassenger_phone(phone); 
+System.out.println("Enter the email to insert"); 
+String email=sc.next(); 
+p.setPassenger_email(email); 
+ht.save(p); 
+} 
+public Passenger_Details GetPassengerById(int id) 
+{ 
+Passenger_Details p=ht.get(Passenger_Details.class, id); 
+System.out.println(p); 
+return p; 
+} 
+public List<Passenger_Details> RetrievePassenger() 
+{ 
+List<Passenger_Details> l= ht.loadAll(Passenger_Details.class); 
+for(Passenger_Details p:l) 
+System.out.println(p); 
+return l; 
+} 
+public void UpdatePassengerEmail() 
+{ 
+Scanner sc=new Scanner(System.in); 
+System.out.println("Enter the id u want to update "); 
+int id=sc.nextInt(); 
+Passenger_Details p1=ht.get(Passenger_Details.class, id); 
+System.out.println("Enter the email "); 
+String email=sc.next(); 
+p1.setPassenger_email(email); 
+ht.saveOrUpdate(p1); 
+ 
+} 
+public void DeletePassengerById() 
+{ 
+Scanner sc=new Scanner(System.in); 
+System.out.println("Enter the id u want to delete"); 
+int id=sc.nextInt(); 
+Passenger_Details p1=ht.get(Passenger_Details.class, id); 
+ht.delete(p1); 
+ 
+} 
+} 
+Passenger_Details.java 
+package springDemo; 
+  
+import javax.persistence.Entity; 
+import javax.persistence.Id; 
+import javax.persistence.Table; 
+  
+@Entity 
+@Table(name="Passenger_Details") 
+public class Passenger_Details { 
+@Id 
+int passenger_id; 
+String passenger_name; 
+String passenger_dob; 
+String passenger_phone; 
+String passenger_email; 
+ 
+public int getPassenger_id() { 
+return passenger_id; 
+} 
+public String getPassenger_name() { 
+return passenger_name; 
+} 
+public String getPassenger_dob() { 
+return passenger_dob; 
+} 
+public String getPassenger_phone() { 
+return passenger_phone; 
+} 
+public String getPassenger_email() { 
+return passenger_email; 
+} 
+public void setPassenger_id(int passenger_id) { 
+this.passenger_id = passenger_id; 
+} 
+public void setPassenger_name(String passenger_name) { 
+this.passenger_name = passenger_name; 
+} 
+public void setPassenger_dob(String passenger_dob) { 
+this.passenger_dob = passenger_dob; 
+} 
+public void setPassenger_phone(String passenger_phone) { 
+this.passenger_phone = passenger_phone; 
+} 
+public void setPassenger_email(String passenger_email) { 
+this.passenger_email = passenger_email; 
+} 
+@Override 
+public String toString() { 
+return "Passenger_Details [passenger_id=" + passenger_id + ", passenger_name=" + passenger_name 
++ ", passenger_dob=" + passenger_dob + ", passenger_phone=" + passenger_phone + ", passenger_email=" 
++ passenger_email + "]"; 
+} 
+} 
+App.java 
+package springDemo; 
+  
+import java.util.Scanner; 
+  
+import org.springframework.context.annotation.AnnotationConfigApplicationContext; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+  
+public class App { 
+static HibernateTemplate ht; 
+public static void main(String[] args) { 
+// TODO Auto-generated method stub 
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class); 
+ht=ctx.getBean(HibernateTemplate.class); 
+DAOLayer dao=ctx.getBean("htDao",DAOLayer.class); 
+ 
+while(true) 
+{ 
+System.out.println("-----------------Bus Booking System------------"); 
+System.out.println("1)Press 1 for insert\n2)Press 2 for update\n3)Press 3 for retrieve\n4)Press 4 for delete\n5)Press 5 for Quit"); 
+System.out.println("make your choice"); 
+Scanner sc=new Scanner(System.in); 
+int option=sc.nextInt(); 
+char ch; 
+switch(option) 
+{ 
+case 1:dao.InsertPassenger(); 
+System.out.println("Do u want to continue ? press y or n"); 
+       ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0); 
+       
+case 2:dao.UpdatePassengerEmail(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0); 
+       
+case 3:dao.RetrievePassenger(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0);  
+          
+case 4:dao.DeletePassengerById(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0);    
+          
+case 5:System.exit(0);break; 
+default:System.out.println("Enter the correct option"); 
+} 
+}   
+} 
+} 
+PassengerTest.java 
+package springDemo; 
+  
+import static org.junit.Assert.assertEquals; 
+import static org.junit.Assert.assertFalse; 
+import static org.junit.Assert.assertNull; 
+  
+import java.sql.SQLException; 
+import java.util.List; 
+  
+import org.junit.Test; 
+import org.springframework.context.annotation.AnnotationConfigApplicationContext; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+  
+public class PassengerTest { 
+ 
+AnnotationConfigApplicationContext ctx=new AnnotationConfigApplicationContext(AppConfig.class); 
+ HibernateTemplate ht=ctx.getBean(HibernateTemplate.class); 
+DAOLayer dao=ctx.getBean("htDao",DAOLayer.class); 
+@Test 
+public void addProductTest() throws SQLException { 
+dao.InsertPassenger(); 
+Passenger_Details p1 = dao.GetPassengerById(1239); 
+ 
+assertEquals("product name should be match", 1239, p1.getPassenger_id()); 
+} 
+@Test 
+    public void testGetAllPassengers() { 
+        List<Passenger_Details> passengers = dao.RetrievePassenger(); 
+        assertFalse(passengers.isEmpty()); 
+    } 
+  
+    @Test 
+    public void testUpdatePassenger() throws SQLException { 
+        
+        dao.UpdatePassengerEmail(); 
+        Passenger_Details updatedPassenger = dao.GetPassengerById(1238); 
+        assertEquals("Vikas12@gmail.com", updatedPassenger.getPassenger_email()); 
+    } 
+  
+    @Test 
+    public void testDeletePassenger() throws SQLException { 
+        dao.DeletePassengerById(); 
+        
+assertNull(dao.GetPassengerById(1239));     
+    } 
+} 
+ 
+
+
 
 
