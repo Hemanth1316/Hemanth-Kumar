@@ -2289,6 +2289,403 @@ default:System.out.println("Enter the correct option");
 } 
 } 
 
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+       Problem Statement 11 – Spring Framework
+
+Serving Web Content with Spring MVC
+Passenger_Details.java
+package com.mph;
+public class Passenger_Details {
+private String name;
+private String dob;
+private String phone;
+private String email;
+ 
+// Getters and Setters
+public String getName() {
+return name;
+}
+ 
+public void setName(String name) {
+this.name = name;
+}
+ 
+public String getDob() {
+return dob;
+}
+ 
+public void setDob(String dob) {
+this.dob = dob;
+}
+ 
+public String getPhone() {
+return phone;
+} 
+public void setPhone(String phone) {
+this.phone = phone;
+}
+public String getEmail() {
+return email;
+}
+public void setEmail(String email) {
+this.email = email;
+}
+}
+ 
+HomeController.java
+package com.mph;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod; 
+ 
+import java.util.ArrayList;
+import java.util.List; 
+ 
+@Controller
+public class HomeController { 
+   private List<Passenger_Details> list = new ArrayList<>(); 
+ 
+   @RequestMapping("/") 
+   public String home() { 
+       return "home"; 
+   } 
+   @RequestMapping(path="/AddPassenger", method=RequestMethod.GET) 
+   public String showAddPassengerForm(Model model) { 
+       model.addAttribute("passenger", new Passenger_Details()); 
+       return "AddPassenger"; 
+   } 
+   @RequestMapping(path="/AddPassenger", method=RequestMethod.POST) 
+   public String addPassenger(@ModelAttribute Passenger_Details passenger, Model model) { 
+       list.add(passenger); 
+       model.addAttribute("passengerList", list); 
+       return "home"; 
+   } 
+   @RequestMapping(path="/ListPassenger", method=RequestMethod.GET) 
+   public String listPassenger(Model model) { 
+       model.addAttribute("passengerList", list); 
+       return "ListPassenger"; 
+   }
+}
+
+
+Home.jsp
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h2>Bus Booking System</h2>
+<a href="AddPassenger">Add Passenger</a>
+<a href="ListPassenger">List Passenger</a>
+</body>
+</html>
+ 
+AddPassenger.jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Add Passenger</title>
+</head>
+<body>
+<h1>Add Passenger</h1>
+<form action="AddPassenger" method="post">
+Name: <input type="text" name="name"><br>
+DOB: <input type="text" name="dob"><br>
+Phone: <input type="text" name="phone"><br>
+Email: <input type="text" name="email"><br>
+<input type="submit" value="Add Passenger">
+</form>
+</body>
+</html>
+
+ListPassenger.jsp
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<!DOCTYPE html>
+<html>
+<head>
+<title>Passenger List</title>
+</head>
+<body>
+<h1>Passenger List</h1>
+<ul>
+<c:forEach var="passenger" items="${passengerList}">
+<li>Name: ${passenger.name}, DOB: ${passenger.dob}, Phone: ${passenger.phone}, Email: ${passenger.email}</li>
+</c:forEach>
+</ul>
+</body>
+</html> 
+ 
+
+---------------=======================================================================------------------------------------=====================================---------------
+
+       Problem Statement 12 – Spring Framework
+
+         
+Building REST services with Spring MVC 
+ 
+PassengerController.java class :  
+package com.mphasis.controller; 
+import java.util.List; 
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Controller; 
+import org.springframework.ui.Model; 
+import org.springframework.web.bind.annotation.DeleteMapping; 
+import org.springframework.web.bind.annotation.GetMapping; 
+import org.springframework.web.bind.annotation.ModelAttribute; 
+import org.springframework.web.bind.annotation.PostMapping; 
+import org.springframework.web.bind.annotation.PutMapping; 
+import org.springframework.web.bind.annotation.RequestMapping; 
+import org.springframework.web.bind.annotation.RequestMethod; 
+import org.springframework.web.bind.annotation.RequestParam; 
+import org.springframework.web.bind.annotation.RestController;  
+  
+import com.mphasis.dto.Passenger; 
+import com.mphasis.service.PassengerService;  
+  
+@RestController 
+public class PassengerController {  
+  
+@Autowired 
+private PassengerService passengerService;  
+  
+@PostMapping("/passengers") 
+public String addPassenger(@ModelAttribute Passenger passenger) {  
+  
+passengerService.createPassenger(passenger); 
+return "added sucessfully"; 
+}  
+  
+@GetMapping("/passengers") 
+public List<Passenger> getPassengers() { 
+List<Passenger> passengers = passengerService.getPassengers(); 
+return passengers; 
+}  
+  
+@PutMapping("/passengers/{passengersId}") 
+public String updatePassengers(@RequestParam int passengerId, @ModelAttribute Passenger passenger) {  
+passengerService.updatePassenger(passengerId, passenger); 
+return "updated successfully";  
+}  
+  
+@GetMapping("/passengers/{passengersId}") 
+public Passenger getPassenger(@RequestParam int passengerId) { 
+return passengerService.getPassenger(passengerId);  
+}  
+  
+@DeleteMapping("/passengers/{passengersId}") 
+public String deletePassenger(@RequestParam int passengerId) { 
+passengerService.deletePassenger(passengerId);  
+return "deleted successfully";  
+} 
+} 
+  
+  
+
+
+
+
+
+
+
+Service Layer: 
+PassengerService.java class:  
+  
+package com.mphasis.service; 
+import java.util.List; 
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; 
+import org.springframework.transaction.annotation.Transactional; 
+import com.mphasis.dao.PassengerDao; 
+import com.mphasis.dto.Passenger;  
+  
+@Service 
+public class PassengerService {  
+  
+@Autowired  
+private PassengerDao passengerDao;  
+public PassengerService(PassengerDao passengerDao) { 
+this.passengerDao = passengerDao; 
+}  
+  
+@Transactional  
+public void createPassenger(Passenger passenger) {  
+passengerDao.createPassenger(passenger); 
+System.out.println("passenger created success");  
+}  
+  
+@Transactional(readOnly = true) 
+public List<Passenger> getPassengers() {  
+return passengerDao.getPassengers();   
+}  
+  
+@Transactional(readOnly = true) 
+public Passenger getPassenger(int id) { 
+return passengerDao.getPassenger(id); 
+}  
+  
+@Transactional 
+public void updatePassenger(int id, Passenger passenger) { 
+passengerDao.updatePassenger(id, passenger);  
+System.out.println("passenger updated Success");  
+}  
+  
+@Transactional 
+public void deletePassenger(int id) {   
+passengerDao.deletePassenger(id);  
+System.out.println("passenger deleted Success"); 
+} 
+} 
+  
+  
+Dao Layer :
+PassengerDao.java interface 
+  
+package com.mphasis.dao; 
+import java.util.List; 
+import com.mphasis.dto.Passenger; 
+public interface PassengerDao { 
+void createPassenger(Passenger passenger);  
+Passenger getPassenger(Integer id); 
+List<Passenger> getPassengers();  
+void updatePassenger(int id, Passenger passenger);    
+void deletePassenger(int id);      
+} 
+
+PassengerDaoImpl.java class:  
+  
+package com.mphasis.dao; 
+import java.util.List; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+import org.springframework.stereotype.Repository; 
+import com.mphasis.dto.Passenger;  
+  
+@Repository 
+public class PassengerDaoImpl implements PassengerDao { 
+private final HibernateTemplate hibernateTemplate; 
+public PassengerDaoImpl(HibernateTemplate hibernateTemplate) { 
+this.hibernateTemplate = hibernateTemplate; 
+}  
+  
+@Override 
+public void createPassenger(Passenger passenger) { 
+System.out.println(passenger.toString()); 
+hibernateTemplate.save(passenger); 
+System.out.println("0000000000"); 
+}  
+  
+@Override 
+public List<Passenger> getPassengers() { 
+return hibernateTemplate.loadAll(Passenger.class); 
+}  
+  
+@Override 
+public Passenger getPassenger(Integer id) { 
+return hibernateTemplate.get(Passenger.class, id);  
+}  
+  
+@Override 
+public void updatePassenger(int id, Passenger passenger) {   
+hibernateTemplate.update(passenger);   
+}  
+  
+@Override 
+public void deletePassenger(int id) { 
+Passenger passenger = hibernateTemplate.get(Passenger.class, id);  
+if(passenger != null) 
+hibernateTemplate.delete(passenger);  
+} 
+} 
+  
+
+PassengerRowmapper.java class:  
+  
+package com.mphasis.dao; 
+import java.sql.ResultSet; 
+import java.sql.SQLException; 
+import org.springframework.jdbc.core.RowMapper; 
+import com.mphasis.dto.Passenger; 
+public class PassengerRowmapper implements RowMapper<Passenger> {  
+  
+@Override 
+public Passenger mapRow(ResultSet rs, int rowNum) throws SQLException {  
+  
+Passenger passenger = new Passenger();  
+  
+passenger.setId(rs.getInt("id"));  
+passenger.setName(rs.getString("name")); 
+passenger.setDob(rs.getString("dob")); 
+passenger.setPhone(rs.getLong("phone")); 
+passenger.setEmail(rs.getString("email"));  
+return passenger;  
+} 
+}  
+  
+
+Config : 
+AppConfig.java class:  
+  
+package com.mphasis.dao; 
+import java.util.Properties; 
+import javax.sql.DataSource;  
+import org.hibernate.SessionFactory; 
+import org.springframework.context.annotation.Bean; 
+import org.springframework.context.annotation.ComponentScan; 
+import org.springframework.context.annotation.Configuration; 
+import org.springframework.jdbc.datasource.DriverManagerDataSource; 
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+import org.springframework.orm.hibernate5.HibernateTransactionManager; 
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean; 
+import org.springframework.transaction.PlatformTransactionManager; 
+import org.springframework.transaction.annotation.EnableTransactionManagement;  
+  
+@Configuration 
+@EnableTransactionManagement 
+@ComponentScan(basePackages = { "com.mphasis.dao" }) 
+public class AppConfig {  
+  
+@Bean 
+public DataSource dataSource() { 
+DriverManagerDataSource dataSource = new DriverManagerDataSource(); 
+dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver"); 
+dataSource.setUrl("jdbc:mysql://localhost:3306/java237"); 
+dataSource.setUsername("root"); 
+dataSource.setPassword("Password@12"); 
+return dataSource; 
+}  
+  
+@Bean 
+public LocalSessionFactoryBean sessionFactory(DataSource dataSource) { 
+LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean(); 
+sessionFactory.setDataSource(dataSource); 
+sessionFactory.setPackagesToScan("com.mphasis.springorm"); // Adjust the package name 
+Properties hibernateProperties = new Properties();  
+  
+hibernateProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect"); 
+hibernateProperties.put("hibernate.show_sql", "true"); 
+hibernateProperties.put("hibernate.hbm2ddl.auto", "update");  
+  
+sessionFactory.setHibernateProperties(hibernateProperties); 
+return sessionFactory; 
+}  
+@Bean 
+public HibernateTemplate hibernateTemplate(SessionFactory sessionFactory) { 
+return new HibernateTemplate(sessionFactory);  
+}  
+@Bean 
+public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) { 
+return new HibernateTransactionManager(sessionFactory); 
+} 
+}  
+
+
  
 
 
