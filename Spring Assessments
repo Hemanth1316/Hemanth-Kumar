@@ -1934,6 +1934,361 @@ assertEquals("product name should be match", 1239, p1.getPassenger_id());
 assertNull(dao.GetPassengerById(1239));     
     } 
 } 
+
+------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+       Problem Statement 10 – Spring Framework
+
+          
+*Adding Transaction Management capability to the Application *
+
+ApplicationContext.xml 
+
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans" 
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+xmlns:aop="http://www.springframework.org/schema/aop" 
+xmlns:context="http://www.springframework.org/schema/context" 
+xmlns:tx="http://www.springframework.org/schema/tx" 
+xsi:schemaLocation=" 
+http://www.springframework.org/schema/beans 
+http://www.springframework.org/schema/beans/spring-beans.xsd 
+http://www.springframework.org/schema/aop 
+http://www.springframework.org/schema/aop/spring-aop.xsd 
+http://www.springframework.org/schema/context 
+http://www.springframework.org/schema/context/spring-context.xsd 
+http://www.springframework.org/schema/tx 
+http://www.springframework.org/schema/tx/spring-tx.xsd"> 
+ 
+<!-- Property source configuration --> 
+<context:property-placeholder location="classpath:db.properties"/> 
+ 
+<!-- Component scan configuration --> 
+<context:component-scan base-package="com.mphasis"/> 
+<!-- Enable transaction management --> 
+<tx:annotation-driven proxy-target-class="true"/> 
+ 
+<!-- DataSource bean definition --> 
+<bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource"> 
+<property name="driverClassName" value="${com.mysql.cj.jdbc.Driver}"/> 
+<property name="url" value="${jdbc:mysql://localhost:3306/java237}"/> 
+<property name="username" value="${root}"/> 
+<property name="password" value="${Password@12}"/> 
+<property name="initialSize" value="10"/> 
+<property name="maxIdle" value="50"/> 
+<property name="minIdle" value="2"/> 
+</bean> 
+ 
+<!-- Hibernate properties --> 
+<bean id="hibernateProperties" class="java.util.Properties"> 
+<constructor-arg> 
+<props> 
+<prop key="hibernate.dialect">org.hibernate.dialect.MySQL8Dialect</prop> 
+<prop key="hibernate.format_sql">true</prop> 
+<prop key="hibernate.use_sql_comments">true</prop> 
+<prop key="hibernate.show_sql">true</prop> 
+<prop key="hibernate.max_fetch_depth">3</prop> 
+<prop key="hibernate.jdbc.batch_size">10</prop> 
+<prop key="hibernate.jdbc.fetch_size">50</prop> 
+<prop key="hibernate.connection.autocommit">true</prop> 
+<prop key="org.hibernate.flushMode">AUTO</prop> 
+</props> 
+</constructor-arg> 
+</bean> 
+ 
+<!-- SessionFactory bean definition --> 
+<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean"> 
+<property name="dataSource" ref="dataSource"/> 
+<property name="packagesToScan" value="com.mphasis"/> 
+<property name="hibernateProperties" ref="hibernateProperties"/> 
+</bean> 
+ 
+<!-- HibernateTemplate bean definition --> 
+<bean id="hibernateTemplate" class="org.springframework.orm.hibernate5.HibernateTemplate"> 
+<constructor-arg ref="sessionFactory"/> 
+</bean> 
+ 
+<!-- Transaction manager bean definition --> 
+<bean id="transactionManager" class="org.springframework.orm.hibernate5.HibernateTransactionManager"> 
+<property name="sessionFactory" ref="sessionFactory"/> 
+</bean> 
+<bean id="htDao" class="com.mphasis.PassengerService"> 
+<constructor-arg name="pd" ref="Dao"/> 
+</bean> 
+ 
+<bean id="Dao" class="com.mphasis.PassengerDAO"> 
+<constructor-arg ref="hibernateTemplate"/> 
+</bean> 
+</beans> 
+ 
+Passenger.java 
+package com.mphasis; 
+import javax.persistence.Entity; 
+import javax.persistence.Id; 
+import javax.persistence.Table; 
+  
+@Entity 
+@Table(name="Passenger_Details") 
+public class Passenger { 
+@Id 
+int passenger_id; 
+String passenger_name; 
+String passenger_dob; 
+String passenger_phone; 
+String passenger_email; 
+ 
+public int getPassenger_id() { 
+return passenger_id; 
+} 
+public String getPassenger_name() { 
+return passenger_name; 
+} 
+public String getPassenger_dob() { 
+return passenger_dob; 
+} 
+public String getPassenger_phone() { 
+return passenger_phone; 
+} 
+public String getPassenger_email() { 
+return passenger_email; 
+} 
+public void setPassenger_id(int passenger_id) { 
+this.passenger_id = passenger_id; 
+} 
+public void setPassenger_name(String passenger_name) { 
+this.passenger_name = passenger_name; 
+} 
+public void setPassenger_dob(String passenger_dob) { 
+this.passenger_dob = passenger_dob; 
+} 
+public void setPassenger_phone(String passenger_phone) { 
+this.passenger_phone = passenger_phone; 
+} 
+public void setPassenger_email(String passenger_email) { 
+this.passenger_email = passenger_email; 
+} 
+@Override 
+public String toString() { 
+return "Passenger_Details [passenger_id=" + passenger_id + ", passenger_name=" + passenger_name 
++ ", passenger_dob=" + passenger_dob + ", passenger_phone=" + passenger_phone + ", passenger_email=" 
++ passenger_email + "]"; 
+} 
+ 
+} 
+
+
+
+IPassengerDAO.java 
+package com.mphasis; 
+ 
+import java.util.List; 
+ 
+public interface IPassengerDAO { 
+public void InsertPassenger(); 
+public Passenger GetPassengerById(int id); 
+public List<Passenger> RetrievePassenger(); 
+public void UpdatePassengerEmail(); 
+public void DeletePassengerById(); 
+} 
+
+
+
+
+
+
+
+
+
+
+
+PassengerDAO.java 
+
+package com.mphasis; 
+import java.util.List; 
+import java.util.Scanner; 
+  
+import org.springframework.orm.hibernate5.HibernateTemplate; 
+import org.springframework.stereotype.Repository; 
+import org.springframework.transaction.annotation.EnableTransactionManagement; 
+import org.springframework.transaction.annotation.Transactional; 
+  
+public class PassengerDAO implements IPassengerDAO { 
+  
+    private HibernateTemplate ht; 
+  
+    public PassengerDAO(HibernateTemplate ht) { 
+        this.ht = ht; 
+    } 
+  
+    @Override 
+    
+    public void InsertPassenger() { 
+        Passenger p = new Passenger(); 
+        try (Scanner sc = new Scanner(System.in)) { 
+            System.out.println("Enter the id to insert"); 
+            int id = sc.nextInt(); 
+            p.setPassenger_id(id); 
+            System.out.println("Enter the name to insert"); 
+            String name = sc.next(); 
+            p.setPassenger_name(name); 
+            System.out.println("Enter the dob to insert"); 
+            String dob = sc.next(); 
+            p.setPassenger_dob(dob); 
+            System.out.println("Enter the phone to insert"); 
+            String phone = sc.next(); 
+            p.setPassenger_phone(phone); 
+            System.out.println("Enter the email to insert"); 
+            String email = sc.next(); 
+            p.setPassenger_email(email); 
+        } 
+        ht.save(p); 
+    } 
+  
+    
+    public Passenger GetPassengerById(int id) { 
+        Passenger p = ht.get(Passenger.class, id); 
+        System.out.println(p); 
+        return p; 
+    } 
+  
+     
+    public List<Passenger> RetrievePassenger() { 
+        List<Passenger> l = ht.loadAll(Passenger.class); 
+        for (Passenger p : l) 
+            System.out.println(p); 
+        return l; 
+    } 
+  
+   
+    public void UpdatePassengerEmail() { 
+        try (Scanner sc = new Scanner(System.in)) { 
+            System.out.println("Enter the id you want to update "); 
+            int id = sc.nextInt(); 
+            Passenger p1 = ht.get(Passenger.class, id); 
+            System.out.println("Enter the email "); 
+            String email = sc.next(); 
+            p1.setPassenger_email(email); 
+            ht.saveOrUpdate(p1); 
+        } 
+    } 
+    public void DeletePassengerById() { 
+        try (Scanner sc = new Scanner(System.in)) { 
+            System.out.println("Enter the id you want to delete"); 
+            int id = sc.nextInt(); 
+            Passenger p1 = ht.get(Passenger.class, id); 
+            ht.delete(p1); 
+        } 
+    } 
+} 
+
+
+
+
+
+
+
+
+PassengerService.java 
+
+package com.mphasis; 
+import java.util.List; 
+import javax.transaction.Transactional;   
+import org.springframework.beans.factory.annotation.Autowired; 
+import org.springframework.stereotype.Service; 
+  
+@Service 
+public class PassengerService { 
+private PassengerDAO dao; 
+@Autowired 
+public PassengerService(PassengerDAO dao) { 
+ 
+this.dao = dao; 
+} 
+    @Transactional 
+public void InsertPassenger() { 
+dao.InsertPassenger(); 
+} 
+    @Transactional 
+ public Passenger GetPassengerById(int id) { 
+return  dao.GetPassengerById(id); 
+ } 
+    @Transactional 
+ public List<Passenger> RetrievePassenger() { 
+ return dao.RetrievePassenger(); 
+ } 
+    @Transactional 
+ public void UpdatePassengerEmail() { 
+ dao.UpdatePassengerEmail(); 
+ } 
+    @Transactional 
+ public void DeletePassengerById() { 
+ dao.DeletePassengerById(); 
+ } 
+} 
+ 
+
+
+App.java 
+
+package com.mphasis; 
+import java.util.Scanner; 
+import org.springframework.context.ApplicationContext; 
+import org.springframework.context.support.ClassPathXmlApplicationContext; 
+public class App { 
+public static void main(String[] args) { 
+// TODO Auto-generated method stub 
+ApplicationContext context = new ClassPathXmlApplicationContext("ApplicationContext.xml"); 
+        PassengerService dao = context.getBean("htDao", PassengerService.class); 
+
+while(true) 
+{ 
+System.out.println("-----------------Bus Booking System------------"); 
+System.out.println("1)Press 1 for insert\n2)Press 2 for update\n3)Press 3 for retrieve\n4)Press 4 for delete\n5)Press 5 for Quit"); 
+System.out.println("make your choice"); 
+Scanner sc=new Scanner(System.in); 
+int option=sc.nextInt(); 
+char ch; 
+switch(option) 
+{ 
+case 1:dao.InsertPassenger(); 
+System.out.println("Do u want to continue ? press y or n"); 
+       ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0); 
+       
+case 2:dao.UpdatePassengerEmail(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0); 
+       
+case 3:dao.RetrievePassenger(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0);  
+         
+case 4:dao.DeletePassengerById(); 
+System.out.println("Do u want to continue ? press y or n"); 
+ch=sc.next().charAt(0); 
+       if(ch=='y') 
+         break; 
+       else 
+         System.exit(0);    
+case 5:System.exit(0);break; 
+default:System.out.println("Enter the correct option"); 
+} 
+} 
+} 
+} 
+
  
 
 
