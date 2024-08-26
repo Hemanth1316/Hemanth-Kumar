@@ -776,5 +776,30 @@ SpringApplication.run(SpringBootPracticeExerciseApplication.class, args);
 }
  } 
 
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+PS - 1
+
+Create MySQL Table
+Create Database Books;
+Use Books;
+CREATE TABLE Book_Details ( 
+   id INT AUTO_INCREMENT PRIMARY KEY, 
+   book_title VARCHAR (255) NOT NULL, 
+   book_publisher VARCHAR (255) NOT NULL, 
+   Book_isbn VARCHAR (13) UNIQUE NOT NULL, 
+   book_number_of_pages INT NOT NULL, 
+   book_year YEAR NOT NULL); 
+ 
+INSERT INTO Book_Details (book_title, book_publisher, book_isbn, book_number_of_pages, book_year)
+VALUES
+('The Great Gatsby', 'Scribner', '9780743273565', 180, 1925),
+('To Kill a Mockingbird', 'J.B. Lippincott & Co.', '9780060935467', 281, 1960),
+('1984', 'Secker & Warburg', '9780451524935', 328, 1949),
+('Pride and Prejudice', 'T. Egerton', '9781503290563', 279, 1913),
+('The Catcher in the Rye', 'Little, Brown and Company', '9780316769488', 277, 1951); 
+ 
+Select * from Book_Details; 
+
 
 
