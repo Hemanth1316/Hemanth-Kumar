@@ -234,8 +234,234 @@ pom.xml
 -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
+PS -3
 
+             Problem Statement 3 – Spring BooT
 
+            Katakam Hemanth Kumar - 2604566
+                                 
+                          MLA JAVA237SM
+---------------------------------------------------------------------------------------------------------------------
+ 
+Create View Layer with Spring Boot Thymeleaf
+Application.properties
+spring.application.name=PractiseQue3
+spring.datasource.url=jdbc:mysql://localhost:3306/book
+spring.datasource.username=root
+spring.datasource.password=Password@12
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+server.port=8090
+ 
+Book_details.java
+package com.mph.PractiseQue3; 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id; 
+ 
+@Entity
+public class Book_Details {
+@Id
+private int id;
+private String title;
+private String publisher;
+private String isbn;
+private String pages;
+private String year;
+public Book_Details() {
+ 
+}
+public int getId() {
+return id;
+}
+public void setId(int id) {
+this.id = id;
+}
+public String getTitle() {
+return title;
+}
+public void setTitle(String title) {
+this.title = title;
+}
+public String getPublisher() {
+return publisher;
+}
+public void setPublisher(String publisher) {
+this.publisher = publisher;
+}
+public String getIsbn() {
+return isbn;
+}
+public void setIsbn(String isbn) {
+this.isbn = isbn;
+}
+public String getYear() {
+return year;
+}
+public void setYear(String year) {
+this.year = year;
+}
+public String getPages() {
+return pages;
+}
+public void setPages(String pages) {
+this.pages = pages;
+}
+@Override
+public String toString() {
+return "Book_Details [id=" + id + ", title=" + title + ", publisher=" + publisher + ", isbn=" + isbn + ", pages="
++ pages + ", year=" + year + "]";
+}  
+}
+
+BookRepository.java
+package com.mph.PractiseQue3;
+import org.springframework.data.jpa.repository.JpaRepository;
+public interface BookRepository extends JpaRepository<Book_Details, Integer> {
+}
+
+AddBook.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Add Book</title>
+</head>
+<body>
+<form action="#" th:action="@{/addBook}" th:object="${bookDetails}" method="post">
+<label for="id">Id:</label>
+<input type="text" id="id" th:field="*{id}"/><br/>
+<label for="title">Title:</label>
+<input type="text" id="title" th:field="*{title}" /><br/>
+<label for="publisher">Publisher:</label>
+<input type="text" id="publisher" th:field="*{publisher}" /><br/>
+<label for="isbn">Isbn:</label>
+<input type="text" id="isbn" th:field="*{isbn}" /><br/>
+<label for="pages">Pages:</label>
+<input type="text" id="pages" th:field="*{pages}" /><br/>
+<label for="year">Year:</label>
+<input type="number" id="year" th:field="*{year}" /><br/>
+<button type="submit">Add Book</button>
+</form>
+</body>
+</html>
+ 
+ListBooks.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Book List</title>
+</head>
+<body>
+<h1>Book List</h1>
+<table border="1">
+<tr>
+<th>Id</th>
+<th>Title</th>
+<th>Publisher</th>
+<th>Isbn</th>
+<th>Pages</th>
+<th>Year</th>
+<th>Edit</th>
+<th>Delete</th>
+</tr>
+<tbody>
+<tr th:each="book : ${books}">
+<td th:text="${book.id}"></td>
+<td th:text="${book.title}"></td> 
+<td th:text="${book.publisher}"></td>
+<td th:text="${book.isbn}"></td>
+<td th:text="${book.pages}"></td>
+<td th:text="${book.year}"></td>
+<td><a th:href="@{/editBook/{id}(id=${book.id})}">Edit</a></td>
+<td> <a th:href="@{/deleteBook/{id}(id=${book.id})}">Delete</a></td>
+</tr>
+</tbody>
+</table>
+</body>
+</html>
+ 
+UpdateBook.html
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>Edit Book</title>
+</head>
+<body>
+<h1>Edit Book</h1>
+<form action="#" th:action="@{/editBook}" th:object="${bookDetails}" method="post">
+<input type="hidden" th:field="*{id}" />
+<label for="title">Title:</label>
+<input type="text" id="title" th:field="*{title}" /><br/>
+<label for="publisher">Publisher:</label>
+<input type="text" id="publisher" th:field="*{publisher}" /><br/>
+<label for="isbn">Isbn:</label>
+<input type="text" id="isbn" th:field="*{isbn}" /><br/>
+<label for="pages">Pages:</label>
+<input type="text" id="pages" th:field="*{pages}" /><br/>
+<label for="year">Year:</label>
+<input type="number" id="year" th:field="*{year}" /><br/>
+<button type="submit">Update Book</button>
+</form>
+</body>
+</html>
+ 
+BookController.java
+package com.mph.PractiseQue3;
+ 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+ 
+ 
+ 
+@Controller
+public class BookController {
+@Autowired
+private BookRepository repo;
+@GetMapping("/addbook")
+public String addbookform(Model model) {
+model.addAttribute("bookDetails", new Book_Details());
+return "AddBook";
+}
+ 
+@PostMapping("/addBook")
+public String addBook(@ModelAttribute Book_Details bookDetails) {
+repo.save(bookDetails);
+return "redirect:/books";
+}
+ 
+@GetMapping("/books")
+public String listBooks(Model model) {
+model.addAttribute("books", repo.findAll());
+return "ListBooks";
+}
+@GetMapping("/editBook/{id}")
+public String showEditBookForm(@PathVariable("id") int id, Model model) {
+Book_Details bookDetails = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
+model.addAttribute("bookDetails", bookDetails);
+return "UpdateBook";
+}
+ 
+@PostMapping("/editBook")
+public String editBook(@ModelAttribute Book_Details bookDetails) {
+repo.save(bookDetails);
+return "redirect:/books";
+}
+ 
+@GetMapping("/deleteBook/{id}")
+public String deleteBook(@PathVariable("id") int id) {
+Book_Details bookDetails = repo.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid book Id:" + id));
+repo.delete(bookDetails);
+return "redirect:/books";
+}
+} 
+
+--------------------------------------------------------------------------------------------------------------------------------------------
 
 
 
