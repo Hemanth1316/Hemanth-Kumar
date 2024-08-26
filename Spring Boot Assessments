@@ -236,12 +236,6 @@ pom.xml
 
 PS -3
 
-             Problem Statement 3 – Spring BooT
-
-            Katakam Hemanth Kumar - 2604566
-                                 
-                          MLA JAVA237SM
----------------------------------------------------------------------------------------------------------------------
  
 Create View Layer with Spring Boot Thymeleaf
 Application.properties
@@ -462,6 +456,325 @@ return "redirect:/books";
 } 
 
 --------------------------------------------------------------------------------------------------------------------------------------------
+
+PS -2
+
+
+Create Spring Boot Microservice with Spring Data JPA 
+ pom.xml
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<modelVersion>4.0.0</modelVersion>
+<parent>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-parent</artifactId>
+<version>3.2.8</version>
+<relativePath/> <!-- lookup parent from repository -->
+</parent>
+<groupId>com.springboot</groupId>
+<artifactId>SpringBootPracticeExercise</artifactId>
+<version>0.0.1-SNAPSHOT</version>
+<name>SpringBootPracticeExercise</name>
+<description>Demo project for Spring Boot</description>
+<url/>
+<licenses>
+<license/>
+</licenses>
+<developers>
+<developer/>
+</developers>
+<scm>
+<connection/>
+<developerConnection/>
+<tag/>
+<url/>
+</scm>
+<properties>
+<java.version>11</java.version>
+</properties>
+<dependencies>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-data-jpa</artifactId>
+</dependency>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-thymeleaf</artifactId>
+</dependency>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-web</artifactId>
+</dependency>
+ 
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-devtools</artifactId>
+<scope>runtime</scope>
+<optional>true</optional>
+</dependency>
+<dependency>
+<groupId>com.mysql</groupId>
+<artifactId>mysql-connector-j</artifactId>
+<scope>runtime</scope>
+</dependency>
+<dependency>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-starter-test</artifactId>
+<scope>test</scope>
+</dependency>
+</dependencies>
+ 
+<build>
+<plugins>
+<plugin>
+<groupId>org.springframework.boot</groupId>
+<artifactId>spring-boot-maven-plugin</artifactId>
+</plugin>
+</plugins>
+</build>
+ 
+</project>
+ 
+Book.java
+package com.springboot.SpringBootPracticeExercise;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+ 
+@Entity
+@Table(name="book_details")
+public class Book {
+ 
+@Id
+@GeneratedValue(strategy = GenerationType.IDENTITY)
+private int id;
+private String bookTitle;
+private String bookPublisher;
+private String bookIsbn;
+private int bookNumberOfPages;
+private int bookYear;
+ 
+public int getId() {
+return id;
+}
+ 
+public void setId(int id) {
+this.id = id;
+}
+ 
+public String getBookTitle() {
+return bookTitle;
+}
+ 
+public void setBookTitle(String bookTitle) {
+this.bookTitle = bookTitle;
+}
+ 
+public String getBookPublisher() {
+return bookPublisher;
+}
+ 
+public void setBookPublisher(String bookPublisher) {
+this.bookPublisher = bookPublisher;
+}
+ 
+public String getBookIsbn() {
+return bookIsbn;
+}
+ 
+public void setBookIsbn(String bookIsbn) {
+this.bookIsbn = bookIsbn;
+}
+ 
+public int getBookNumberOfPages() {
+return bookNumberOfPages;
+}
+ 
+public void setBookNumberOfPages(int bookNumberOfPages) {
+this.bookNumberOfPages = bookNumberOfPages;
+}
+ 
+public int getBookYear() {
+return bookYear;
+}
+ 
+public void setBookYear(int bookYear) {
+this.bookYear = bookYear;
+}
+ 
+}
+ 
+BookRepository.java
+package com.springboot.SpringBootPracticeExercise;
+import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.web.bind.annotation.PathVariable;
+public interface BookRepository extends JpaRepository<Book, Integer> {
+ 
+Book findByBookTitle(@PathVariable String title);
+List<Book> findByBookPublisherLike(@PathVariable String publisher);
+List<Book> findByBookYear(@PathVariable int year);
+}
+
+ 
+BookStoreRestController.java
+package com.springboot.SpringBootPracticeExercise;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+ 
+@RestController
+@RequestMapping("books")
+public class BookStoreRestController {
+ 
+@Autowired
+BookStoreService bs;
+ 
+@Autowired
+BookRepository repo;
+ 
+@PostMapping
+public Book addBook(@RequestBody Book book) {
+// TODO Auto-generated method stub
+return bs.addBook(book);
+}
+ 
+@PutMapping("/{id}")
+public Book updateBook(@PathVariable int id, @RequestBody Book updatedBook) {
+// TODO Auto-generated method stub
+return bs.updateBook(id, updatedBook);
+}
+ 
+@GetMapping
+public List<Book> findAllBooks() {
+// TODO Auto-generated method stub
+return bs.findAllBooks();
+}
+ 
+@GetMapping("/book/{book_id}")
+public Optional<Book> findAllByBookId(@PathVariable int book_id) {
+// TODO Auto-generated method stub
+return bs.findAllByBookId(book_id);
+}
+ 
+@DeleteMapping("/{book_id}")
+public void deleteBook(@PathVariable int book_id) {
+// TODO Auto-generated method stub
+bs.deleteBook(book_id);
+}
+ 
+@GetMapping("/title/{book_title}")
+public Book findByBookTitle(@PathVariable String book_title) {
+// TODO Auto-generated method stub
+return bs.findByBookTitle(book_title);
+}
+ 
+@GetMapping("/publisher/{book_publisher}")
+public List<Book> findByBookPublisherLike(@PathVariable String book_publisher) {
+// TODO Auto-generated method stub
+return bs.findByBookPublisherLike(book_publisher);
+}
+ 
+@GetMapping("/year/{book_year}")
+public List<Book> findByYear(@PathVariable int book_year) {
+// TODO Auto-generated method stub
+return bs.findByBookYear(book_year);
+}
+ 
+} 
+ 
+BookStoreService.java
+package com.springboot.SpringBootPracticeExercise;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
+ 
+@Service
+public class BookStoreService {
+ 
+@Autowired
+BookRepository repo;
+ 
+public Book addBook(@RequestBody Book book) {
+// TODO Auto-generated method stub
+return repo.save(book);
+}
+ 
+public Book updateBook(@PathVariable int id, @RequestBody Book updatedBook) {
+// TODO Auto-generated method stub
+if(repo.existsById(id)) {
+updatedBook.setId(id);
+return repo.save(updatedBook);
+}
+return null;
+}
+ 
+public List<Book> findAllBooks() {
+// TODO Auto-generated method stub
+return repo.findAll();
+}
+ 
+public Optional<Book> findAllByBookId(@PathVariable int book_id) {
+// TODO Auto-generated method stub
+return repo.findById(book_id);
+}
+ 
+public void deleteBook(@PathVariable int book_id) {
+// TODO Auto-generated method stub
+repo.deleteById(book_id);
+}
+ 
+public Book findByBookTitle(@PathVariable String book_title) {
+// TODO Auto-generated method stub
+return repo.findByBookTitle(book_title);
+}
+ 
+public List<Book> findByBookPublisherLike(@PathVariable String book_publisher) {
+// TODO Auto-generated method stub
+return repo.findByBookPublisherLike(book_publisher);
+}
+ 
+public List<Book> findByBookYear(@PathVariable int book_year) {
+// TODO Auto-generated method stub
+return repo.findByBookYear(book_year);
+}} 
+application.properties
+spring.application.name=SpringBootPracticeExercise
+server.port=8090
+spring.datasource.url=jdbc:mysql://localhost:3306/practice_db
+spring.datasource.username=root
+spring.datasource.password=Password@12
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true 
+ 
+SpringBookPraticeExerciseApplication.java
+package com.springboot.SpringBootPracticeExercise;
+ 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+@SpringBootApplication
+public class SpringBootPracticeExerciseApplication {
+ 
+public static void main(String[] args) {
+SpringApplication.run(SpringBootPracticeExerciseApplication.class, args);
+}
+ } 
 
 
 
